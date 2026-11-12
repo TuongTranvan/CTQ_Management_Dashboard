@@ -1,0 +1,21 @@
+# Python
+backend/.venv/
+backend/__pycache__/
+*.pyc
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Environment
+.env
+
+# VSCode
+.vscode/
+
+# Logs
+logs/
+
+backend/data/*.duckdb
+backend/data/*.db
+backend/data/*.wal
