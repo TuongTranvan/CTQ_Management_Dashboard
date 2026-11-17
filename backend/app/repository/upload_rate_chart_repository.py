@@ -64,7 +64,7 @@ class UploadRateChartRepository:
         FROM machine_summary
         ORDER BY level_type ASC, machine_name ASC
         """
-        rows = conn.execute(query).fetchall()
+        rows = conn.cursor().execute(query).fetchall()
 
         overall_stats = {"total": 0, "uploaded": 0}
         process_stats = {}
@@ -102,7 +102,7 @@ class UploadRateChartRepository:
         FROM {table_name}
         {where_clause}
         """
-        row = conn.execute(query).fetchone()
+        row = conn.cursor().execute(query).fetchone()
         return row if row else (0, 0)
 
     @staticmethod
@@ -135,4 +135,4 @@ class UploadRateChartRepository:
         ORDER BY
             period ASC
         """
-        return conn.execute(query).fetchall()
+        return conn.cursor().execute(query).fetchall()

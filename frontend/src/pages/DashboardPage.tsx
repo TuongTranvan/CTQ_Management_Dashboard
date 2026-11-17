@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Sidebar from "../components/monaco/common/Sidebar";
 
 import SummaryCards from "../components/monaco/dashboard/summaryCards";
@@ -7,6 +8,8 @@ import Cpk from "../components/monaco/dashboard/Cpk";
 import OutSpecTable from "../components/monaco/dashboard/OutSpecTable";
 
 export default function DashboardPage() {
+    const [periodType, setPeriodType] = useState<"month" | "week">("month");
+    const [periodValue, setPeriodValue] = useState("2026-11")
   return (
     <div className="bg-[#f4f7fe] text-[#2b3674] min-h-screen flex">
       <Sidebar />
@@ -40,7 +43,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Date Button */}
-          <div className="flex items-center self-start md:self-auto">
+          {/* <div className="flex items-center self-start md:self-auto">
             <button
               type="button"
               className="
@@ -66,14 +69,50 @@ export default function DashboardPage() {
 
               <i className="fa-solid fa-chevron-down text-[10px]"></i>
             </button>
+          </div> */}
+          <div className="flex items-center gap-2">
+            <select
+              value={periodType}
+              onChange={(e) => {
+                const type = e.target.value as "month" | "week";
+
+                setPeriodType(type);
+
+                if (type === "month") {
+                  setPeriodValue("2026-11");
+                } else {
+                  setPeriodValue("2026-W45");
+                }
+              }}
+              className="px-3 py-2 rounded-xl border"
+            >
+              <option value="month">Month</option>
+              <option value="week">Week</option>
+            </select>
+
+            {periodType === "month" ? (
+              <input
+                type="month"
+                value={periodValue}
+                onChange={(e) => setPeriodValue(e.target.value)}
+                className="px-3 py-2 rounded-xl border"
+              />
+            ) : (
+              <input
+                type="week"
+                value={periodValue}
+                onChange={(e) => setPeriodValue(e.target.value)}
+                className="px-3 py-2 rounded-xl border"
+              />
+            )}
           </div>
         </header>
 
         {/* Body */}
         <main className="flex-1 p-6 lg:p-8 pt-2 space-y-6 max-w-[1600px] w-full mx-auto">
-          <SummaryCards />
+          <SummaryCards periodType={periodType} periodValue={periodValue} />
 
-          <UploadRate />
+          <UploadRate periodType={periodType} periodValue={periodValue} />
 
           <OutSpecRate />
 
