@@ -8,39 +8,67 @@ import Cpk from "../components/monaco/dashboard/Cpk";
 import OutSpecTable from "../components/monaco/dashboard/OutSpecTable";
 
 export default function DashboardPage() {
-    const [periodType, setPeriodType] = useState<"month" | "week">("month");
-    const [periodValue, setPeriodValue] = useState("2026-11")
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const [periodType, setPeriodType] = useState<"month" | "week">("month");
+  const [periodValue, setPeriodValue] = useState("2026-11")
   return (
     <div className="bg-[#f4f7fe] text-[#2b3674] min-h-screen flex">
-      <Sidebar />
+      {/* <Sidebar /> */}
+
+      {/* Lớp phủ mờ bấm ra ngoài để đóng menu trên màn hình nhỏ */}
+      {isSidebarOpen && (
+        <div
+          onClick={() => setIsSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-900/20 z-20 lg:hidden"
+        />
+      )}
+
+      <Sidebar isOpen={isSidebarOpen} />
+
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Header */}
+        {/* Header */}
         <header className="pt-6 px-6 lg:px-8 pb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            {/* Breadcrumb */}
-            <nav
-              aria-label="Breadcrumb"
-              className="text-xs font-semibold text-[#707eae] mb-1"
+          <div className="flex items-center gap-3.5">
+            {/* Nút Ẩn/Hiện Sidebar */}
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen((prev) => !prev)}
+              title={isSidebarOpen ? "Ẩn menu" : "Mở menu"}
+              className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-[#1b2559] hover:text-[#4318ff] hover:border-[#4318ff]/30 transition-all cursor-pointer flex-shrink-0"
             >
-              <ol className="inline-flex items-center space-x-1">
-                <li className="hover:underline cursor-pointer">
-                  CTQ Monitoring
-                </li>
+              <i className={`fa-solid ${isSidebarOpen ? "fa-indent" : "fa-bars"} text-sm`}></i>
+            </button>
 
-                <span>/</span>
+            <div>
+              {/* Breadcrumb */}
+              <nav
+                aria-label="Breadcrumb"
+                className="text-xs font-semibold text-[#707eae] mb-1"
+              >
+                <ol className="inline-flex items-center space-x-1">
+                  <li className="hover:underline cursor-pointer">
+                    CTQ Monitoring
+                  </li>
 
-                <li className="text-[#2b3674]">
-                  Dashboard
-                </li>
-              </ol>
-            </nav>
+                  <span>/</span>
 
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1b2559] tracking-tight">
-              Main Dashboard
-            </h1>
+                  <li className="text-[#2b3674]">
+                    Dashboard
+                  </li>
+                </ol>
+              </nav>
+
+              <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1b2559] tracking-tight">
+                Main Dashboard
+              </h1>
+            </div>
           </div>
+
 
           {/* Date Button */}
           {/* <div className="flex items-center self-start md:self-auto">

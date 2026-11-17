@@ -1,8 +1,14 @@
-export default function Sidebar() {
+
+interface SidebarProps {
+  isOpen: boolean;
+}
+
+export default function Sidebar({ isOpen }: SidebarProps) {
     return (
      <aside
-    className="w-64 bg-white border-r border-slate-100 flex-shrink-0 flex flex-col min-h-screen fixed lg:static z-30 transition-all duration-300 select-none"
-    data-purpose="main-navigation-sidebar">
+    className={`bg-white border-r border-slate-100 flex-shrink-0 flex flex-col min-h-screen fixed lg:static z-30 transition-all duration-300 select-none overflow-hidden ${
+  isOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full lg:translate-x-0 border-none"
+}`}>
 
     <div className="h-20 flex items-center px-7 space-x-3.5 border-b border-transparent">
       <div

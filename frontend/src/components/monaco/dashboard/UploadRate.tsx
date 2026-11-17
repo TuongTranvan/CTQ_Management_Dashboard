@@ -189,100 +189,69 @@ export default function UploadRateSection({
                     </div>
                 </div>
 
-                <div className="pt-2 pb-2 overflow-x-auto">
-                    <div className="min-w-[480px]">
+                <div className="pt-2 pb-2">
+                    <div className="w-full">
+
                         <div className="flex items-stretch">
                             {/* các line và các máy */}
-                            <div
-                                className="
-                            w-28
-                            flex-shrink-0
-                            flex
-                            flex-col
-                            gap-5
-                            py-2
-                            pr-3
-                            text-right
-                            text-xs
-                            font-medium
-                            text-[#1b2559]
-                            ">
+                            <div className="w-16 flex-shrink-0 flex flex-col gap-4 pt-2 pb-6 pr-3 text-right text-xs font-semibold text-[#1b2559]">
                                 {getYAxis(reflowData).map(label => (
-                                    <span
-                                        key={label}
-                                        className="
-                                            whitespace-nowrap
-                                            overflow-hidden
-                                            text-ellipsis
-                                        "
-                                    >
-                                        {label}
-                                    </span>
+                                    <div key={label} className="h-7 flex items-center justify-end">
+                                        <span className="truncate">{label}</span>
+                                    </div>
                                 ))}
                             </div>
+
                             {/* tỷ lệ biểu đồ */}
                             <div className="flex-1 flex flex-col border-l border-b border-slate-400 pl-4 pr-2 pt-2 pb-6">
-                                <div className="flex flex-col space-y-5">
-
+                                <div className="flex flex-col gap-4">
                                     {getRows(reflowData).map(row => (
-
                                         <div
                                             key={row.label}
-                                            className="grid gap-3 items-center"
+                                            className="grid gap-3 items-center h-7"
                                             style={{
-                                                gridTemplateColumns: `repeat(${row.periods.length}, minmax(0,1fr))`
+                                                gridTemplateColumns: `repeat(${row.periods.length}, minmax(0, 1fr))`
                                             }}>
-
                                             {row.periods.map((cell, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="flex items-center gap-1">
-
-                                                    <div
-                                                        className="flex-1 bg-slate-200 h-6 rounded-[2px] overflow-hidden ">
-                                                        <div
-                                                            className="bg-[#5ecad9] h-full"
-                                                            style={{
-                                                                width: `${cell.rate}%`
-                                                            }}
-                                                        />
+                                                <div key={idx} className="flex items-center gap-1.5 h-full min-w-0">
+                                                    <div className="flex-1 min-w-0 bg-slate-200 h-5 rounded-[3px] overflow-hidden">
+                                                        <div className="bg-[#5ecad9] h-full" style={{ width: `${cell.rate}%` }} />
                                                     </div>
-
-                                                    <span
-                                                        className="text-[10px] font-bold text-[#1b2559] min-w-[30px]">
+                                                    <span className="w-8 text-right text-[11px] font-bold text-[#1b2559] flex-shrink-0 tabular-nums">
                                                         {cell.rate.toFixed(0)}%
-
                                                     </span>
-
                                                 </div>
-
                                             ))}
 
                                         </div>
-
                                     ))}
-
                                 </div>
+
                             </div>
                         </div>
 
                         {/* trục X */}
-                        <div className="flex pl-16 pt-2.5">
-                            <div className="flex-1 pl-4 pr-2 flex justify-between text-center text-xs text-[#1b2559]">
+                        {/* trục X */}
+                        <div className="flex pt-2.5">
+                            <div className="w-16 flex-shrink-0" />
+                            <div
+                                className="flex-1 pl-4 pr-2 grid gap-3 text-xs font-medium text-[#1b2559]"
+                                style={{
+                                    gridTemplateColumns: `repeat(${reflowData?.chart.length || 1}, minmax(0, 1fr))`
+                                }}
+                            >
                                 {reflowData?.chart.map(item => (
-                                    <span
-                                        key={item.period}
-                                        className="
-                                            flex-1
-                                            truncate
-                                            whitespace-nowrap
-                                        "
-                                    >
-                                        {formatPeriod(item.period)}
-                                    </span>
+                                    <div key={item.period} className="flex items-center gap-1.5 min-w-0">
+                                        <span className="flex-1 text-center truncate whitespace-nowrap">
+                                            {formatPeriod(item.period)}
+                                        </span>
+                                        <span className="w-8 flex-shrink-0" />
+                                    </div>
                                 ))}
                             </div>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -338,98 +307,42 @@ export default function UploadRateSection({
                     </div>
                 </div>
 
-                <div className="pt-2 pb-2 overflow-x-auto">
-                    <div className="min-w-[480px]">
+                <div className="pt-2 pb-2">
+                    <div className="w-full">
+
                         <div className="flex items-stretch">
-                            <div
-                                className="
-                                    w-28
-                                    flex-shrink-0
-                                    flex
-                                    flex-col
-                                    gap-5
-                                    py-2
-                                    pr-4
-                                    text-right
-                                    text-xs
-                                    font-semibold
-                                    text-[#1b2559]
-                                "
-                            >
+                            <div className="w-16 flex-shrink-0 flex flex-col gap-4 pt-2 pb-6 pr-3 text-right text-xs font-semibold text-[#1b2559]">
                                 {getYAxis(defluxData).map(label => (
-                                    <span
-                                        key={label}
-                                        className="
-                                            block
-                                            truncate
-                                            whitespace-nowrap
-                                        "
-                                    >
-                                        {label}
-                                    </span>
+                                    <div key={label} className="h-7 flex items-center justify-end">
+                                        <span className="truncate">{label}</span>
+                                    </div>
                                 ))}
                             </div>
 
+
                             <div className="flex-1 flex flex-col border-l border-b border-slate-400 pl-4 pr-2 pt-2 pb-6">
-                                <div className="flex flex-col space-y-5">
-
+                                <div className="flex flex-col gap-4">
                                     {getRows(defluxData).map(row => (
-
                                         <div
                                             key={row.label}
-                                            className="grid gap-3 items-center"
+                                            className="grid gap-3 items-center h-7"
                                             style={{
-                                                gridTemplateColumns:
-                                                    `repeat(${row.periods.length}, minmax(90px,1fr))`
+                                                gridTemplateColumns: `repeat(${row.periods.length}, minmax(0, 1fr))`
                                             }}
                                         >
 
+
                                             {row.periods.map((cell, idx) => (
-
-                                                <div
-                                                    key={idx}
-                                                    className="
-                                                        flex
-                                                        items-center
-                                                        gap-2
-                                                        h-7
-                                                    "
-                                                >
-
-                                                    <div
-                                                        className="
-                            flex-1
-                            min-w-[80px]
-                            h-4
-                            bg-slate-200
-                            rounded-sm
-                            overflow-hidden
-                        "
-                                                    >
-                                                        <div
-                                                            className="bg-[#5ecad9] h-full"
-                                                            style={{
-                                                                width: `${cell.rate}%`
-                                                            }}
-                                                        />
+                                                <div key={idx} className="flex items-center gap-1.5 h-full min-w-0">
+                                                    <div className="flex-1 min-w-0 bg-slate-200 h-5 rounded-[3px] overflow-hidden">
+                                                        <div className="bg-[#5ecad9] h-full" style={{ width: `${cell.rate}%` }} />
                                                     </div>
-
-                                                    <span
-                                                        className="
-                            w-10
-                            text-right
-                            text-[10px]
-                            font-bold
-                            text-[#1b2559]
-                            flex-shrink-0
-                        "
-                                                    >
-                                                        {cell.rate.toFixed(2)}%
+                                                    <span className="w-8 text-right text-[11px] font-bold text-[#1b2559] flex-shrink-0 tabular-nums">
+                                                        {cell.rate.toFixed(0)}%
                                                     </span>
-
                                                 </div>
-
                                             ))}
+
 
                                         </div>
 
@@ -439,37 +352,26 @@ export default function UploadRateSection({
                             </div>
                         </div>
 
-                        <div className="flex pl-16 pt-2.5">
-                            <div className="flex-1 pl-4 pr-2 grid grid-cols-5 gap-3 text-center text-xs font-normal text-[#1b2559]">
-                                <div className="ml-24 mt-3">
-                                    <div
-                                        className="grid gap-3"
-                                        style={{
-                                            gridTemplateColumns:
-                                                `repeat(${defluxData?.chart.length || 1}, minmax(90px,1fr))`
-                                        }}
-                                    >
-
-                                        {defluxData?.chart.map(item => (
-
-                                            <div
-                                                key={item.period}
-                                                className="
-                    text-center
-                    text-xs
-                    font-medium
-                    whitespace-nowrap
-                "
-                                            >
-                                                {formatPeriod(item.period)}
-                                            </div>
-
-                                        ))}
-
+                        <div className="flex pt-2.5">
+                            <div className="w-16 flex-shrink-0" />
+                            <div
+                                className="flex-1 pl-4 pr-2 grid gap-3 text-xs font-medium text-[#1b2559]"
+                                style={{
+                                    gridTemplateColumns: `repeat(${defluxData?.chart.length || 1}, minmax(0, 1fr))`
+                                }}
+                            >
+                                {defluxData?.chart.map(item => (
+                                    <div key={item.period} className="flex items-center gap-1.5 min-w-0">
+                                        <span className="flex-1 text-center truncate whitespace-nowrap">
+                                            {formatPeriod(item.period)}
+                                        </span>
+                                        <span className="w-8 flex-shrink-0" />
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
+
+
                     </div>
                 </div>
 
