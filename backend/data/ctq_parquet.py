@@ -12,13 +12,13 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from services.ftp_reader_raw import (
+from data.ftp_reader_raw import (
     get_folder_files,
     get_ftp,
     read_file
 )
 
-from services.station_master import (
+from data.station_master import (
     get_asset_mapping
 )
 
@@ -45,7 +45,7 @@ START_DATE = datetime(
 
 SAVE_EVERY = 100
 
-DATA_DIR = ROOT_DIR / "backend/app/database"
+DATA_DIR = ROOT_DIR / "data"
 DATA_DIR.mkdir(
     parents=True,
     exist_ok=True
@@ -86,6 +86,26 @@ def load_parquet(path):
         return pd.read_parquet(path)
 
     return pd.DataFrame()
+
+def update_source_folder(df, folder_map):
+
+    if df.empty:
+        return df
+
+    mask = df["Source_File"].isin(folder_map)
+
+    df.loc[
+        mask,
+        "Source_Folder"
+    ] = (
+        df.loc[
+            mask,
+            "Source_File"
+        ]
+        .map(folder_map)
+    )
+
+    return df
 
 
 def fix_parquet_types(df):
@@ -315,6 +335,8 @@ def build_panel_history():
 
     files_to_scan = []
 
+    folder_map = {}
+
     print("\nSCAN FTP")
 
     for folder in TARGET_FOLDERS:
@@ -326,6 +348,8 @@ def build_panel_history():
             )
 
             for filename in folder_files:
+
+                folder_map[filename] = folder
 
                 info = parse_filename(
                     filename
@@ -392,6 +416,29 @@ def build_panel_history():
         f"FILES TO SCAN : "
         f"{len(files_to_scan):,}"
     )
+
+    reflow_old = update_source_folder(
+        reflow_old,
+        folder_map
+    )
+
+    deflux_old = update_source_folder(
+        deflux_old,
+        folder_map
+    )
+
+    if not reflow_old.empty:
+        reflow_old.to_parquet(
+            REFLOW_PARQUET,
+            index=False
+        )
+
+    if not deflux_old.empty:
+        deflux_old.to_parquet(
+            DEFLUX_PARQUET,
+            index=False
+        )
+
 
     reflow_batch = []
     deflux_batch = []
@@ -572,21 +619,8 @@ def build_panel_history():
 
             print(e)
 
-            try:
-
-                if process.startswith(
-                    "Reflow"
-                ):
-                    reflow_error.add(
-                        filename
-                    )
-                else:
-                    deflux_error.add(
-                        filename
-                    )
-
-            except:
-                pass
+            # KHÔNG add vào error.pkl
+            continue
 
     save_checkpoint(
         REFLOW_PARQUET,

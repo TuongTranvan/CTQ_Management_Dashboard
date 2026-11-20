@@ -34,14 +34,17 @@ export default function SummaryCards({
 
         fetchData();
     }, [periodType, periodValue]);
-    if (loading) {
-        return (
-            <div className="text-center py-5"> Loading...</div>
-        );
-    }
 
   return (
-          <section aria-label="Quick Statistics" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <section
+            aria-label="Quick Statistics"
+            className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
+             {loading && (
+                  <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
+                  </div>
+              )}
         <article
           className="bg-white rounded-2xl p-4 flex items-center shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100">
           <div

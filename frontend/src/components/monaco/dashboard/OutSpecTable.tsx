@@ -17,10 +17,10 @@ export default function OutSpecTable() {
 
         <tbody>
           <tr>
-            <td>SMT1</td>
+            {/* <td>SMT1</td>
             <td>B_Zone1</td>
             <td>S1RF-A01</td>
-            <td>165.5</td>
+            <td>165.5</td> */}
           </tr>
         </tbody>
       </table>

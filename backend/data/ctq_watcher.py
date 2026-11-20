@@ -1,4 +1,4 @@
-# data_ctq/ctq_watcher.py
+# data/ctq_watcher.py
 
 import sys
 import time
@@ -12,7 +12,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from data_ctq.ctq_parquet import (
+from data.ctq_parquet import (
     build_panel_history
 )
 
