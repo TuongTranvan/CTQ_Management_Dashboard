@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../components/monaco/common/Sidebar";
 
 import SummaryCards from "../components/monaco/dashboard/summaryCards";
@@ -8,16 +8,36 @@ import Cpk from "../components/monaco/dashboard/Cpk";
 import OutSpecTable from "../components/monaco/dashboard/OutSpecTable";
 
 export default function DashboardPage() {
-
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [periodType, setPeriodType] = useState<"month" | "week">("month");
-  const [periodValue, setPeriodValue] = useState("2026-11")
+  const [periodValue, setPeriodValue] = useState("2026-11");
+
+  const [loading, setLoading] = useState(true);
+
+  // Chỉ chạy khi mở trang lần đầu
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="bg-[#f4f7fe] text-[#2b3674] min-h-screen flex">
-      {/* <Sidebar /> */}
+      {loading && (
+        <div className="fixed inset-0 z-[99999] bg-[#f4f7fe] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-6">
+            <div className="w-16 h-16 border-[5px] border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
 
-      {/* Lớp phủ mờ bấm ra ngoài để đóng menu trên màn hình nhỏ */}
+            <div className="text-[#1b2559] font-semibold text-lg">
+              Loading Dashboard...
+            </div>
+          </div>
+        </div>
+      )}
+
       {isSidebarOpen && (
         <div
           onClick={() => setIsSidebarOpen(false)}
@@ -27,25 +47,27 @@ export default function DashboardPage() {
 
       <Sidebar isOpen={isSidebarOpen} />
 
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        {/* Header */}
-        {/* Header */}
+      <div
+        className={`flex-1 flex flex-col min-w-0 overflow-y-auto ${
+          loading ? "pointer-events-none" : ""
+        }`}
+      >
         <header className="pt-6 px-6 lg:px-8 pb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            {/* Nút Ẩn/Hiện Sidebar */}
             <button
               type="button"
               onClick={() => setIsSidebarOpen((prev) => !prev)}
               title={isSidebarOpen ? "Ẩn menu" : "Mở menu"}
               className="w-10 h-10 rounded-xl bg-white border border-slate-200/80 shadow-sm flex items-center justify-center text-[#1b2559] hover:text-[#4318ff] hover:border-[#4318ff]/30 transition-all cursor-pointer flex-shrink-0"
             >
-              <i className={`fa-solid ${isSidebarOpen ? "fa-indent" : "fa-bars"} text-sm`}></i>
+              <i
+                className={`fa-solid ${
+                  isSidebarOpen ? "fa-indent" : "fa-bars"
+                } text-sm`}
+              />
             </button>
 
             <div>
-              {/* Breadcrumb */}
               <nav
                 aria-label="Breadcrumb"
                 className="text-xs font-semibold text-[#707eae] mb-1"
@@ -57,9 +79,7 @@ export default function DashboardPage() {
 
                   <span>/</span>
 
-                  <li className="text-[#2b3674]">
-                    Dashboard
-                  </li>
+                  <li className="text-[#2b3674]">Dashboard</li>
                 </ol>
               </nav>
 
@@ -69,35 +89,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-
-          {/* Date Button */}
-          {/* <div className="flex items-center self-start md:self-auto">
-            <button
-              type="button"
-              className="
-                inline-flex
-                items-center
-                space-x-2
-                bg-[#4318ff]
-                hover:bg-[#3311db]
-                text-white
-                px-4
-                py-2
-                rounded-xl
-                text-xs
-                font-semibold
-                shadow-md
-                shadow-indigo-500/20
-                transition-all
-              "
-            >
-              <i className="fa-regular fa-calendar text-[11px]"></i>
-
-              <span>November 2026</span>
-
-              <i className="fa-solid fa-chevron-down text-[10px]"></i>
-            </button>
-          </div> */}
           <div className="flex items-center gap-2">
             <select
               value={periodType}
@@ -112,7 +103,7 @@ export default function DashboardPage() {
                   setPeriodValue("2026-W45");
                 }
               }}
-              className="px-3 py-2 rounded-xl border"
+              className="min-w-[110px] px-4 pr-8 py-2 rounded-xl border bg-white"
             >
               <option value="month">Month</option>
               <option value="week">Week</option>
@@ -136,11 +127,16 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* Body */}
         <main className="flex-1 p-6 lg:p-8 pt-2 space-y-6 max-w-[1600px] w-full mx-auto">
-          <SummaryCards periodType={periodType} periodValue={periodValue} />
+          <SummaryCards
+            periodType={periodType}
+            periodValue={periodValue}
+          />
 
-          <UploadRate periodType={periodType} periodValue={periodValue} />
+          <UploadRate
+            periodType={periodType}
+            periodValue={periodValue}
+          />
 
           <OutSpecRate />
 

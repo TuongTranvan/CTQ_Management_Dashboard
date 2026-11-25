@@ -152,7 +152,12 @@ export default function UploadRateSection({
     return (
         <section aria-label="Upload Rates Section" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <article
-                className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between h-full">
+                className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between h-full">
+                {loading && (
+                    <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
+                    </div>
+                )}
                 <div className="flex items-start justify-between mb-4">
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-[#a3aed0]">Reflow upload rate</p>
@@ -164,12 +169,22 @@ export default function UploadRateSection({
                     <div className="flex items-center space-x-3">
                         <select
                             value={reflowScope}
-                            onChange={(e) =>
-                                setReflowScope(
-                                    e.target.value
-                                )
-                            }
-                            className="px-3 py-1 bg-[#f4f7fe] rounded-full border">
+                            onChange={(e) => setReflowScope(e.target.value)}
+                            className="
+                                px-3 py-1
+                                pr-8
+                                min-w-[50px]
+                                bg-[#f4f7fe]
+                                hover:bg-slate-200
+                                text-[#2b3674]
+                                font-medium
+                                text-xs
+                                rounded-full
+                                border border-slate-200
+                                shadow-sm
+                                transition-all
+                            "
+                        >
                             <option value="All">
                                 All
                             </option>
@@ -262,12 +277,17 @@ export default function UploadRateSection({
                             <span>Upload Rate</span>
                         </div>
                     </div>
-                    <span className="font-medium">Last updated 5m ago</span>
+                    <span className="font-medium"></span>
                 </div>
             </article>
 
             <article
-                className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between h-full">
+                className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between h-full">
+                {loading && (
+                    <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                        <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
+                    </div>
+                )}
                 <div className="flex items-start justify-between mb-4">
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-[#a3aed0]">Deflux upload rate</p>
@@ -278,15 +298,20 @@ export default function UploadRateSection({
                     <div className="flex items-center space-x-3">
                         <select
                             value={defluxScope}
-                            onChange={(e) =>
-                                setDefluxScope(e.target.value)
-                            }
+                            onChange={(e) => setDefluxScope(e.target.value)}
                             className="
-                                px-3
-                                py-1
+                                px-3 py-1
+                                pr-8
+                                min-w-[10px]
                                 bg-[#f4f7fe]
+                                hover:bg-slate-200
+                                text-[#2b3674]
+                                font-medium
+                                text-xs
                                 rounded-full
-                                border
+                                border border-slate-200
+                                shadow-sm
+                                transition-all
                             "
                         >
                             <option value="All">All</option>
@@ -382,7 +407,7 @@ export default function UploadRateSection({
                             <span>Upload Rate</span>
                         </div>
                     </div>
-                    <span className="font-medium">Last updated 5m ago</span>
+                    <span className="font-medium"></span>
                 </div>
             </article>
         </section>

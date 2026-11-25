@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database.connection import conn
 from app.database.register_tables import init_duckdb_views
 from app.api.upload import router as upload_router
+from app.api.out_spec import router as out_spec_router
 
 
 @asynccontextmanager
@@ -49,4 +50,10 @@ app.include_router(
     upload_router,
     prefix="/api/upload",
     tags=["Upload"]
+)
+
+app.include_router(
+    out_spec_router,
+    prefix="/api/out-spec",
+    tags=["Out Spec"]
 )
