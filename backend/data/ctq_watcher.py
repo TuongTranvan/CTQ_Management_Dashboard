@@ -16,7 +16,7 @@ from data.ctq_parquet import (
     build_panel_history
 )
 
-SCAN_INTERVAL = 300  # 5 phút
+SCAN_INTERVAL = 900  # 5 phút
 
 
 def log(msg):

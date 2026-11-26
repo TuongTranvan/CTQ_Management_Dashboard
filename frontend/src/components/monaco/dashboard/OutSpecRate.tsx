@@ -25,65 +25,60 @@ export default function TrendSection({
   const [reflowData, setReflowData] = useState<OutSpecRateResponse | null>(null);
   const [defluxData, setDefluxData] = useState<OutSpecRateResponse | null>(null);
 
-  const [reflowLoading, setReflowLoading] = useState(true);
-  const [defluxLoading, setDefluxLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const [reflowScope, setReflowScope] = useState("All");
   const [defluxScope, setDefluxScope] = useState("All");
 
-  // 1. Fetch dữ liệu Reflow độc lập
-  useEffect(() => {
-    let isMounted = true;
+  const [reflowHoverPoint, setReflowHoverPoint] = useState<any>(null);
+  const [defluxHoverPoint, setDefluxHoverPoint] = useState<any>(null);
 
-    const fetchReflow = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
+
+      setLoading(true);
+
       try {
-        setReflowLoading(true);
-        const res = await getOutSpecRateChart(
+
+        const reflow = await getOutSpecRateChart(
           "reflow",
           periodType,
           periodValue,
           reflowScope
         );
-        if (isMounted) setReflowData(res);
-      } catch (error) {
-        console.error("Failed to fetch reflow data:", error);
-      } finally {
-        if (isMounted) setReflowLoading(false);
-      }
-    };
 
-    fetchReflow();
-    return () => {
-      isMounted = false;
-    };
-  }, [periodType, periodValue, reflowScope]);
+        setReflowData(reflow);
 
-  // 2. Fetch dữ liệu Deflux độc lập
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchDeflux = async () => {
-      try {
-        setDefluxLoading(true);
-        const res = await getOutSpecRateChart(
+        const deflux = await getOutSpecRateChart(
           "deflux",
           periodType,
           periodValue,
           defluxScope
         );
-        if (isMounted) setDefluxData(res);
+
+        setDefluxData(deflux);
+
       } catch (error) {
-        console.error("Failed to fetch deflux data:", error);
+
+        console.error(error);
+
       } finally {
-        if (isMounted) setDefluxLoading(false);
+
+        setLoading(false);
+
       }
     };
 
-    fetchDeflux();
-    return () => {
-      isMounted = false;
-    };
-  }, [periodType, periodValue, defluxScope]);
+
+    fetchData();
+
+  }, [
+    periodType,
+    periodValue,
+    reflowScope,
+    defluxScope
+  ]);
+
 
   const getLegend = (data: OutSpecRateResponse | null): string[] => {
     if (!data?.chart?.length) return [];
@@ -115,7 +110,7 @@ export default function TrendSection({
 
     const svgWidth = 400;
     const svgHeight = 150;
-    const paddingX = 12;
+    const paddingX = 40;
     const paddingY = 12;
 
     const usableWidth = svgWidth - paddingX * 2;
@@ -155,30 +150,64 @@ export default function TrendSection({
     isLoading: boolean,
     scope: string,
     onScopeChange: (val: string) => void,
-    scopeOptions: string[]
+    scopeOptions: string[],
+    hoverPoint: any,
+    setHoverPoint: any
   ) => {
+
     const legends = getLegend(data);
 
     return (
-      <article className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100">
+      <article className="relative bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100">
+
+        {isLoading && (
+          <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
+          </div>
+        )}
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <div>
-            <p className="text-xs font-semibold text-[#a3aed0]">{title}</p>
-            <h4 className="text-lg sm:text-xl font-black text-[#1b2559]">
-              {data?.summary?.fail ?? 0}/{data?.summary?.total ?? 0} strips
+
+          <div className="min-w-0">
+
+            <p className="text-xs font-semibold text-[#a3aed0]">
+              {title}
+            </p>
+
+            <div className="flex items-center space-x-2 mt-0.5">
+
+              <h4 className="text-lg sm:text-xl font-black text-[#1b2559]">
+                {(data?.summary?.fail ?? 0).toLocaleString()}/
+                {(data?.summary?.total ?? 0).toLocaleString()} strips
+              </h4>
+
               {data?.summary?.rate !== undefined && (
-                <span className="ml-2 text-xs font-bold text-slate-400">
+                <span className="text-xs font-semibold text-[#a3aed0]">
                   ({data.summary.rate}%)
                 </span>
               )}
-            </h4>
+
+            </div>
+
           </div>
 
           <select
             value={scope}
             onChange={(e) => onScopeChange(e.target.value)}
-            className="px-3 py-1 bg-[#f4f7fe] text-xs font-medium text-[#1b2559] rounded-full border border-slate-200 outline-none cursor-pointer"
+            className="
+              px-3 py-1
+              pr-8
+              min-w-[50px]
+              bg-[#f4f7fe]
+              hover:bg-slate-200
+              text-[#2b3674]
+              font-medium
+              text-xs
+              rounded-full
+              border border-slate-200
+              shadow-sm
+              transition-all
+            "
           >
             {scopeOptions.map((opt) => (
               <option key={opt} value={opt}>
@@ -186,6 +215,7 @@ export default function TrendSection({
               </option>
             ))}
           </select>
+
         </div>
 
         {/* Legends */}
@@ -196,7 +226,7 @@ export default function TrendSection({
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
               />
-              <span className="text-xs font-medium text-slate-600">{item}</span>
+              <span className="text-xs font-semibold text-[#1b2559]">{item}</span>
             </div>
           ))}
         </div>
@@ -204,9 +234,34 @@ export default function TrendSection({
         {/* Chart Area */}
         <div
           className={`h-48 relative transition-opacity duration-200 ${
-            isLoading ? "opacity-40 pointer-events-none" : "opacity-100"
+            isLoading ? "opacity-40" : "opacity-100"
           }`}
         >
+          {hoverPoint && (
+            <div
+              className="
+                absolute
+                z-50
+                px-3
+                py-1.5
+                rounded-md
+                bg-slate-800
+                text-white
+                text-xs
+                font-bold
+                shadow-lg
+                pointer-events-none
+                whitespace-nowrap
+              "
+              style={{
+                left: `${(hoverPoint.x / 400) * 100}%`,
+                top: `${(hoverPoint.y / 150) * 100}%`,
+                transform: "translate(-50%, -120%)",
+              }}
+            >
+              {hoverPoint.label}: {hoverPoint.rate.toFixed(2)}%
+            </div>
+          )}
           {!isLoading && (!data?.chart || data.chart.length === 0) ? (
             <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
               No data available
@@ -217,24 +272,41 @@ export default function TrendSection({
               viewBox="0 0 400 150"
               preserveAspectRatio="none"
             >
-              {/* Đường kẻ ngang tham chiếu 0%, 50%, 100% */}
-              {[12, 75, 138].map((yPos) => (
-                <line
-                  key={yPos}
-                  x1="12"
-                  y1={yPos}
-                  x2="388"
-                  y2={yPos}
-                  stroke="#f1f5f9"
-                  strokeWidth="1"
-                  strokeDasharray="4 4"
-                />
+              {/* Y Axis */}
+              {[
+                { y: 12, label: "100%" },
+                { y: 43.5, label: "75%" },
+                { y: 75, label: "50%" },
+                { y: 106.5, label: "25%" },
+                { y: 138, label: "0%" },
+              ].map((item) => (
+                <g key={item.label}>
+                  <line
+                    x1="35"
+                    y1={item.y}
+                    x2="388"
+                    y2={item.y}
+                    stroke="#9ba4ac"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                  />
+
+                  <text
+                    x="27"
+                    y={item.y + 3}
+                    textAnchor="end"
+                    fontSize="8"
+                    fill="#000000"
+                    fontWeight="500"
+                  >
+                    {item.label}
+                  </text>
+                </g>
               ))}
 
               {legends.map((item, index) => {
                 const color = COLORS[index % COLORS.length];
                 const points = getCoordinates(data, item);
-
                 return (
                   <g key={item}>
                     <path
@@ -254,9 +326,18 @@ export default function TrendSection({
                         fill="#ffffff"
                         stroke={color}
                         strokeWidth="2"
-                      >
-                        <title>{`${item} (${formatPeriod(pt.period)}): ${pt.rate}%`}</title>
-                      </circle>
+                        onMouseEnter={() =>
+                          setHoverPoint({
+                            x: pt.x,
+                            y: pt.y,
+                            rate: pt.rate,
+                            period: pt.period,
+                            label: item,
+                            color,
+                          })
+                        }
+                        onMouseLeave={() => setHoverPoint(null)}
+                      />
                     ))}
                   </g>
                 );
@@ -266,9 +347,21 @@ export default function TrendSection({
         </div>
 
         {/* X-Axis Labels */}
-        <div className="mt-3 flex justify-between text-xs text-slate-400 px-1">
+        <div
+          className="mt-3 grid text-xs text-slate-400"
+          style={{
+            gridTemplateColumns: `repeat(${data?.chart?.length || 1}, 1fr)`,
+            paddingLeft: "40px",
+            paddingRight: "12px",
+          }}
+        >
           {data?.chart?.map((item) => (
-            <span key={item.period}>{formatPeriod(item.period)}</span>
+            <div
+              key={item.period}
+              className="text-center text-xs font-semibold text-[#1b2559]"
+            >
+              {formatPeriod(item.period)}
+            </div>
           ))}
         </div>
       </article>
@@ -283,19 +376,23 @@ export default function TrendSection({
       {renderChartCard(
         "Reflow Out Spec Rate",
         reflowData,
-        reflowLoading,
+        loading,
         reflowScope,
         setReflowScope,
-        ["All", "SMT1", "SMT2", "SMT3"]
+        ["All", "SMT1", "SMT2", "SMT3"],
+        reflowHoverPoint,
+        setReflowHoverPoint
       )}
 
       {renderChartCard(
         "Deflux Out Spec Rate",
         defluxData,
-        defluxLoading,
+        loading,
         defluxScope,
         setDefluxScope,
-        ["All", "Deflux1", "Deflux2", "Deflux3"]
+        ["All", "Deflux1", "Deflux2", "Deflux3"],
+        defluxHoverPoint,
+        setDefluxHoverPoint
       )}
     </section>
   );
