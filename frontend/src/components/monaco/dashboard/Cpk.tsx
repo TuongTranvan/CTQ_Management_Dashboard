@@ -1,95 +1,264 @@
 export default function CpkSection() {
   return (
-          <section aria-label="CPK Distribution Pie Charts" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <article
-          className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold text-[#707eae] tracking-wide">Reflow CPK</p>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111827] mt-1 tracking-tight">#1.33</h3>
-              <div
-                className="mt-2 inline-flex items-center space-x-1.5 bg-[#e6fffa] text-[#00bba6] text-xs font-bold px-2.5 py-1 rounded-md">
-                <i className="fa-solid fa-arrow-trend-up text-[11px]"></i><span>11.2%</span></div>
-            </div><button
-              className="px-3 py-1 bg-[#f4f7fe] hover:bg-slate-200 text-[#2b3674] font-medium text-xs rounded-full border border-slate-200 flex items-center gap-1.5 shadow-sm transition-all"
-              type="button"><span>All</span><i className="fa-solid fa-chevron-down text-[10px] text-[#707eae]"></i></button>
+    <section
+      aria-label="CPK Trend Charts"
+      className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+      {/* Reflow CPK */}
+      <article className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <p className="text-xs font-semibold text-[#707eae] tracking-wide">
+              Reflow CPK
+            </p>
+
+            <div className="flex items-center space-x-2 mt-1">
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+                #1.33
+              </h3>
+
+              <div className="inline-flex items-center space-x-1 bg-[#e6fffa] text-[#00bba6] text-xs font-bold px-2 py-0.5 rounded-md">
+                <i className="fa-solid fa-arrow-trend-up text-[10px]" />
+                <span>+11.2%</span>
+              </div>
+            </div>
           </div>
-          <div className="my-8 flex justify-center items-center">
-            <div className="w-64 h-64 sm:w-72 sm:h-72">
-              <svg className="w-full h-full drop-shadow-sm" viewBox="0 0 200 200">
-                <path d="M 100 100 L 100 10 A 90 90 0 0 1 100 190 Z" fill="#00bfa5" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
-                <path d="M 100 100 L 100 190 A 90 90 0 0 1 10 100 Z" fill="#2563eb" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
-                <path d="M 100 100 L 10 100 A 90 90 0 0 1 100 10 Z" fill="#f59e0b" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
+
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="inline-flex items-center p-0.5 bg-[#f4f7fe] rounded-full border border-slate-200 text-[11px] font-semibold">
+              <button
+                type="button"
+                className="px-2.5 py-1 rounded-full bg-[#4318ff] text-white"
+              >
+                Daily
+              </button>
+
+              <button
+                type="button"
+                className="px-2.5 py-1 rounded-full text-[#707eae]"
+              >
+                Weekly
+              </button>
+            </div>
+
+            <button
+              className="px-2.5 py-1 bg-[#f4f7fe] text-[#2b3674] text-xs rounded-full border border-slate-200 flex items-center gap-1.5"
+              type="button"
+            >
+              <i className="fa-regular fa-calendar text-[10px]" />
+              <span>05/11 - 08/11</span>
+            </button>
+
+            <button
+              className="px-2.5 py-1 bg-[#f4f7fe] text-[#2b3674] text-xs rounded-full border border-slate-200 flex items-center gap-1.5"
+              type="button"
+            >
+              <span>All Line</span>
+              <i className="fa-solid fa-chevron-down text-[9px]" />
+            </button>
+          </div>
+        </div>
+
+        <div className="relative pt-2 pb-1 overflow-x-auto">
+          <div className="min-w-[400px]">
+            <div className="relative h-56 w-full">
+              <svg
+                className="w-full h-full overflow-visible"
+                preserveAspectRatio="none"
+                viewBox="0 0 520 220"
+              >
+                <line
+                  x1="50"
+                  y1="10"
+                  x2="50"
+                  y2="195"
+                  stroke="#475569"
+                  strokeWidth="1.2"
+                />
+
+                <line
+                  x1="50"
+                  y1="195"
+                  x2="510"
+                  y2="195"
+                  stroke="#475569"
+                  strokeWidth="1.2"
+                />
+
+                <line
+                  x1="50"
+                  y1="173"
+                  x2="510"
+                  y2="173"
+                  stroke="#ef4444"
+                  strokeWidth="1"
+                  strokeDasharray="2,2"
+                />
+
+                <text
+                  x="500"
+                  y="167"
+                  fill="#ef4444"
+                  fontSize="9"
+                  fontWeight="600"
+                  textAnchor="end"
+                >
+                  Baseline : 1.33
+                </text>
+
+                <path
+                  d="M 50,185 C 80,180 110,180 135,178 C 145,178 150,195 160,202 C 175,210 190,190 205,185 C 215,183 220,198 230,200 C 245,202 260,185 275,160 C 290,135 300,70 315,35 C 325,12 335,15 342,70 C 347,150 350,195 365,198 C 380,200 395,185 410,180 C 420,175 430,190 445,192 C 475,195 490,192 505,192"
+                  fill="none"
+                  stroke="#d97706"
+                  strokeWidth="2"
+                />
+
+                <path
+                  d="M 50,172 C 70,170 85,160 100,158 C 110,155 115,170 130,173 C 150,178 170,172 190,155 C 205,140 215,105 230,95 C 238,90 244,115 250,140 C 255,165 265,168 280,158 C 295,150 310,152 325,160 C 335,165 345,178 355,178 C 375,170 395,158 415,158 C 430,158 440,175 460,185 C 480,190 495,190 510,189"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="2"
+                />
+
+                <path
+                  d="M 50,158 C 70,145 90,140 110,140 C 120,140 125,165 140,165 C 160,165 180,160 200,150 C 215,140 220,120 235,120 C 245,120 250,135 260,140 C 275,142 290,135 305,125 C 315,122 330,122 340,130 C 350,140 360,155 375,155 C 390,155 405,142 420,135 C 440,128 460,125 480,118"
+                  fill="none"
+                  stroke="#4318ff"
+                  strokeWidth="2"
+                />
               </svg>
             </div>
           </div>
-          <div className="space-y-3 pt-3 border-t border-slate-100 text-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#00bfa5] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">SMT 1</span></div><span className="font-bold text-[#111827]">50%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#2563eb] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">SMT 2</span></div><span className="font-bold text-[#111827]">25%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#f59e0b] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">SMT 3</span></div><span className="font-bold text-[#111827]">25%</span>
+        </div>
+
+        <div className="pt-3 mt-1 border-t border-slate-100 flex flex-wrap gap-4 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#d97706]" />
+            <span>B_Zone12_Sensor_Up</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#22c55e]" />
+            <span>Zone2_Oxygen_Content</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#4318ff]" />
+            <span>Zone10_Oxygen_Content</span>
+          </div>
+        </div>
+      </article>
+
+      {/* Deflux CPK */}
+      <article className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
+        <div className="flex items-start justify-between mb-2">
+          <div>
+            <p className="text-xs font-semibold text-[#707eae] tracking-wide">
+              Deflux CPK
+            </p>
+
+            <div className="flex items-center space-x-2 mt-1">
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+                #1.33
+              </h3>
+
+              <div className="inline-flex items-center space-x-1 bg-[#e6fffa] text-[#00bba6] text-xs font-bold px-2 py-0.5 rounded-md">
+                <i className="fa-solid fa-arrow-trend-up text-[10px]" />
+                <span>+8.4%</span>
+              </div>
             </div>
           </div>
-        </article>
-        <article
-          className="bg-white rounded-2xl p-6 sm:p-8 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold text-[#707eae] tracking-wide">Deflux CPK</p>
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#111827] mt-1 tracking-tight">#1.33</h3>
-              <div
-                className="mt-2 inline-flex items-center space-x-1.5 bg-[#e6fffa] text-[#00bba6] text-xs font-bold px-2.5 py-1 rounded-md">
-                <i className="fa-solid fa-arrow-trend-up text-[11px]"></i><span>11.2%</span></div>
-            </div><button
-              className="px-3 py-1 bg-[#f4f7fe] hover:bg-slate-200 text-[#2b3674] font-medium text-xs rounded-full border border-slate-200 flex items-center gap-1.5 shadow-sm transition-all"
-              type="button"><span>All</span><i className="fa-solid fa-chevron-down text-[10px] text-[#707eae]"></i></button>
-          </div>
-          <div className="my-8 flex justify-center items-center">
-            <div className="w-64 h-64 sm:w-72 sm:h-72">
-              <svg className="w-full h-full drop-shadow-sm" viewBox="0 0 200 200">
-                <path d="M 100 100 L 100 10 A 90 90 0 0 1 100 190 Z" fill="#00bfa5" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
-                <path d="M 100 100 L 100 190 A 90 90 0 0 1 10 100 Z" fill="#2563eb" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
-                <path d="M 100 100 L 10 100 A 90 90 0 0 1 100 10 Z" fill="#f59e0b" stroke="#ffffff"
-                  stroke-linejoin="round" stroke-width="2.5"></path>
+        </div>
+
+        <div className="relative pt-2 pb-1 overflow-x-auto">
+          <div className="min-w-[400px]">
+            <div className="relative h-56 w-full">
+              <svg
+                className="w-full h-full overflow-visible"
+                preserveAspectRatio="none"
+                viewBox="0 0 520 220"
+              >
+                <line
+                  x1="50"
+                  y1="10"
+                  x2="50"
+                  y2="195"
+                  stroke="#475569"
+                  strokeWidth="1.2"
+                />
+
+                <line
+                  x1="50"
+                  y1="195"
+                  x2="510"
+                  y2="195"
+                  stroke="#475569"
+                  strokeWidth="1.2"
+                />
+
+                <line
+                  x1="50"
+                  y1="173"
+                  x2="510"
+                  y2="173"
+                  stroke="#ef4444"
+                  strokeWidth="1"
+                  strokeDasharray="2,2"
+                />
+
+                <text
+                  x="500"
+                  y="167"
+                  fill="#ef4444"
+                  fontSize="9"
+                  fontWeight="600"
+                  textAnchor="end"
+                >
+                  Baseline : 1.33
+                </text>
+
+                <path
+                  d="M 50,185 C 80,180 110,180 135,178 C 145,178 150,195 160,202 C 175,210 190,190 205,185 C 215,183 220,198 230,200 C 245,202 260,185 275,160 C 290,135 300,70 315,35 C 325,12 335,15 342,70 C 347,150 350,195 365,198 C 380,200 395,185 410,180 C 420,175 430,190 445,192 C 475,195 490,192 505,192"
+                  fill="none"
+                  stroke="#d97706"
+                  strokeWidth="2"
+                />
+
+                <path
+                  d="M 50,172 C 70,170 85,160 100,158 C 110,155 115,170 130,173 C 150,178 170,172 190,155 C 205,140 215,105 230,95 C 238,90 244,115 250,140 C 255,165 265,168 280,158 C 295,150 310,152 325,160 C 335,165 345,178 355,178 C 375,170 395,158 415,158 C 430,158 440,175 460,185 C 480,190 495,190 510,189"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="2"
+                />
+
+                <path
+                  d="M 50,158 C 70,145 90,140 110,140 C 120,140 125,165 140,165 C 160,165 180,160 200,150 C 215,140 220,120 235,120 C 245,120 250,135 260,140 C 275,142 290,135 305,125 C 315,122 330,122 340,130 C 350,140 360,155 375,155 C 390,155 405,142 420,135 C 440,128 460,125 480,118"
+                  fill="none"
+                  stroke="#4318ff"
+                  strokeWidth="2"
+                />
               </svg>
             </div>
           </div>
-          <div className="space-y-3 pt-3 border-t border-slate-100 text-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#00bfa5] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">Deflux 1</span></div><span
-                className="font-bold text-[#111827]">50%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#2563eb] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">Deflux 2</span></div><span
-                className="font-bold text-[#111827]">25%</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3"><span
-                  className="w-3 h-3 rounded-full bg-[#f59e0b] flex-shrink-0"></span><span
-                  className="text-[#475569] font-medium">Deflux 3</span></div><span
-                className="font-bold text-[#111827]">25%</span>
-            </div>
+        </div>
+
+        <div className="pt-3 mt-1 border-t border-slate-100 flex flex-wrap gap-4 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#d97706]" />
+            <span>Deflux_Wash_Sensor</span>
           </div>
-        </article>
-      </section>
+
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#22c55e]" />
+            <span>Deflux_Tank2_Concentration</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-3 rounded-[2px] bg-[#4318ff]" />
+            <span>Deflux_Rinse_Conductivity</span>
+          </div>
+        </div>
+      </article>
+    </section>
   );
 }

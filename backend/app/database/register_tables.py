@@ -53,7 +53,7 @@ def init_duckdb_views():
     line_sql = f"CASE {' '.join(line_cases)} ELSE get_deflux_tag(Source_File) END"
     station_sql = f"CASE {' '.join(station_cases)} ELSE 'Unknown' END"
 
-    # 5. Tạo View cho Reflow (chỉ đọc các cột cần thiết từ Parquet)
+    # 5. Tạo View cho Reflow (chỉ đọc các cột cần thiết từ Parquet) dùng cho card và upload rate
     conn.execute(f"""
     CREATE OR REPLACE VIEW reflow_ctq AS 
     SELECT
@@ -66,7 +66,7 @@ def init_duckdb_views():
     FROM read_parquet('data/reflow_ctq.parquet');
     """)
 
-    # 6. Tạo View cho Deflux (chỉ đọc các cột cần thiết từ Parquet)
+    # 6. Tạo View cho Deflux (chỉ đọc các cột cần thiết từ Parquet)dùng cho card và upload rate
     conn.execute(f"""
     CREATE OR REPLACE VIEW deflux_ctq AS 
     SELECT 
@@ -78,6 +78,47 @@ def init_duckdb_views():
         Source_Folder
     FROM read_parquet('data/deflux_ctq.parquet');
     """)
+
+    #7. Tạo view reflow cho phần out spec rate
+    conn.execute(f"""
+    CREATE OR REPLACE VIEW reflow_ctq_fail AS
+    SELECT
+        *,
+        {name_sql} AS machine_name,
+        {line_sql} AS line,
+        {station_sql} AS station,
+        get_effective_time(Source_File, StartTime) AS eff_time
+    FROM read_parquet('data/reflow_ctq.parquet')
+    WHERE
+        Source_Folder LIKE '%CTQ_FAIL_SPEC%'
+        OR
+        Source_Folder LIKE '%CTQ_FAIL_COV_AND_SPEC%';
+    """)
+
+
+        # 8. Tạo view deflux cho phần out spec rate
+    conn.execute(f"""
+    CREATE OR REPLACE VIEW deflux_ctq_fail AS
+    SELECT
+        *,
+        {name_sql} AS machine_name,
+        {line_sql} AS line,
+        {station_sql} AS station,
+        get_effective_time(Source_File, START_TIME) AS eff_time
+    FROM read_parquet('data/deflux_ctq.parquet')
+    WHERE
+        Source_Folder LIKE '%CTQ_FAIL_SPEC%'
+        OR
+        Source_Folder LIKE '%CTQ_FAIL_COV_AND_SPEC%';
+    """)
+
+
+
+
+
+
+
+
 
 
 # Tự động chạy khi module được import

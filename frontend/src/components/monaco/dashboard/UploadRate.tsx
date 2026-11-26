@@ -157,7 +157,7 @@ export default function UploadRateSection({
                     <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
                     </div>
-                )}   
+                )}
                 <div className="flex items-start justify-between mb-4">
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-[#a3aed0]">Reflow upload rate</p>
@@ -287,7 +287,7 @@ export default function UploadRateSection({
                     <div className="absolute inset-0 z-20 bg-white/70 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                         <div className="w-10 h-10 border-4 border-slate-200 border-t-[#4318ff] rounded-full animate-spin" />
                     </div>
-                )}                
+                )}
                 <div className="flex items-start justify-between mb-4">
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-[#a3aed0]">Deflux upload rate</p>

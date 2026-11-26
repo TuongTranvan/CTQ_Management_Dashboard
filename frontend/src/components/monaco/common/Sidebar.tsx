@@ -13,11 +13,11 @@ export default function Sidebar({ isOpen }: SidebarProps) {
     <div className="h-20 flex items-center px-7 space-x-3.5 border-b border-transparent">
       <div
         className="w-10 h-10 rounded-full bg-[#1b59f8] flex items-center justify-center text-white shadow-md shadow-blue-500/30">
-        <span className="font-extrabold text-lg tracking-tighter">CA</span>
+        <span className="font-extrabold text-lg tracking-tighter">PE 1</span>
       </div>
       <div className="flex flex-col">
-        <span className="font-extrabold text-base tracking-tight text-[#1b2559] leading-tight">CTQ</span>
-        <span className="text-[11px] font-bold tracking-widest text-[#a3aed0] uppercase">Monitoring</span>
+        <span className="font-extrabold text-base tracking-tight text-[#1b2559] leading-tight"> Sip Engineering 1</span>
+        <span className="text-[11px] font-bold tracking-widest text-[#a3aed0] uppercase">Dashboard</span>
       </div>
     </div>
     <nav aria-label="Sidebar Menu" className="mt-4 px-4 flex-1 space-y-1.5">
@@ -26,7 +26,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
         <span className="w-5 text-center mr-3 text-base text-[#4318ff]">
           <i className="fa-solid fa-house"></i>
         </span>
-        <span>Dashboard</span>
+        <span>CTQ Dashboard</span>
         <span className="absolute right-0 top-2 bottom-2 w-1.5 bg-[#4318ff] rounded-l-full"></span>
       </a>
       <a className="flex items-center px-4 py-3.5 text-sm font-semibold rounded-xl text-[#a3aed0] hover:text-[#4318ff] hover:bg-[#f4f7fe]/50 transition-colors"

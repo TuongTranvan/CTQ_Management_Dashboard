@@ -1,127 +1,302 @@
-export default function TrendSection() {
+import { useEffect, useState } from "react";
+import {
+  getOutSpecRateChart,
+  type OutSpecRateResponse,
+} from "../../../api/monaco/dashboard/outSpecRate";
+
+interface TrendSectionProps {
+  periodType: string;
+  periodValue: string;
+}
+
+const COLORS = [
+  "#6a11cb",
+  "#f472b6",
+  "#f97316",
+  "#22c55e",
+  "#06b6d4",
+  "#ef4444",
+];
+
+export default function TrendSection({
+  periodType,
+  periodValue,
+}: TrendSectionProps) {
+  const [reflowData, setReflowData] = useState<OutSpecRateResponse | null>(null);
+  const [defluxData, setDefluxData] = useState<OutSpecRateResponse | null>(null);
+
+  const [reflowLoading, setReflowLoading] = useState(true);
+  const [defluxLoading, setDefluxLoading] = useState(true);
+
+  const [reflowScope, setReflowScope] = useState("All");
+  const [defluxScope, setDefluxScope] = useState("All");
+
+  // 1. Fetch dữ liệu Reflow độc lập
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchReflow = async () => {
+      try {
+        setReflowLoading(true);
+        const res = await getOutSpecRateChart(
+          "reflow",
+          periodType,
+          periodValue,
+          reflowScope
+        );
+        if (isMounted) setReflowData(res);
+      } catch (error) {
+        console.error("Failed to fetch reflow data:", error);
+      } finally {
+        if (isMounted) setReflowLoading(false);
+      }
+    };
+
+    fetchReflow();
+    return () => {
+      isMounted = false;
+    };
+  }, [periodType, periodValue, reflowScope]);
+
+  // 2. Fetch dữ liệu Deflux độc lập
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchDeflux = async () => {
+      try {
+        setDefluxLoading(true);
+        const res = await getOutSpecRateChart(
+          "deflux",
+          periodType,
+          periodValue,
+          defluxScope
+        );
+        if (isMounted) setDefluxData(res);
+      } catch (error) {
+        console.error("Failed to fetch deflux data:", error);
+      } finally {
+        if (isMounted) setDefluxLoading(false);
+      }
+    };
+
+    fetchDeflux();
+    return () => {
+      isMounted = false;
+    };
+  }, [periodType, periodValue, defluxScope]);
+
+  const getLegend = (data: OutSpecRateResponse | null): string[] => {
+    if (!data?.chart?.length) return [];
+    const first = data.chart[0];
+
+    if (data.view_mode === "by_line") {
+      return first.lines?.map((x) => x.line) ?? [];
+    }
+    return first.machines?.map((x) => x.machine) ?? [];
+  };
+
+  const getRate = (
+    data: OutSpecRateResponse | null,
+    periodIndex: number,
+    label: string
+  ): number => {
+    const bucket = data?.chart?.[periodIndex];
+    if (!bucket) return 0;
+
+    if (data?.view_mode === "by_line") {
+      return bucket.lines?.find((x) => x.line === label)?.rate ?? 0;
+    }
+    return bucket.machines?.find((x) => x.machine === label)?.rate ?? 0;
+  };
+
+  // Tính toán danh sách tọa độ (x, y) có padding để không bị cắt nét ở 0% và 100%
+  const getCoordinates = (data: OutSpecRateResponse | null, label: string) => {
+    if (!data?.chart?.length) return [];
+
+    const svgWidth = 400;
+    const svgHeight = 150;
+    const paddingX = 12;
+    const paddingY = 12;
+
+    const usableWidth = svgWidth - paddingX * 2;
+    const usableHeight = svgHeight - paddingY * 2;
+    const count = data.chart.length;
+
+    return data.chart.map((bucket, idx) => {
+      const rate = getRate(data, idx, label);
+      const x =
+        count === 1
+          ? svgWidth / 2
+          : paddingX + (idx * usableWidth) / (count - 1);
+      const y = paddingY + usableHeight - (rate / 100) * usableHeight;
+
+      return { x, y, rate, period: bucket.period };
+    });
+  };
+
+  const createPath = (points: { x: number; y: number }[]): string => {
+    if (points.length < 2) return "";
+    return "M " + points.map((p) => `${p.x},${p.y}`).join(" L ");
+  };
+
+  const formatPeriod = (period: string) => {
+    if (periodType.toLowerCase() === "week" && period.includes("-")) {
+      const parts = period.split("-");
+      if (parts.length === 3) {
+        return `${parts[1]}-${parts[2]}`;
+      }
+    }
+    return period;
+  };
+
+  const renderChartCard = (
+    title: string,
+    data: OutSpecRateResponse | null,
+    isLoading: boolean,
+    scope: string,
+    onScopeChange: (val: string) => void,
+    scopeOptions: string[]
+  ) => {
+    const legends = getLegend(data);
+
+    return (
+      <article className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <p className="text-xs font-semibold text-[#a3aed0]">{title}</p>
+            <h4 className="text-lg sm:text-xl font-black text-[#1b2559]">
+              {data?.summary?.fail ?? 0}/{data?.summary?.total ?? 0} strips
+              {data?.summary?.rate !== undefined && (
+                <span className="ml-2 text-xs font-bold text-slate-400">
+                  ({data.summary.rate}%)
+                </span>
+              )}
+            </h4>
+          </div>
+
+          <select
+            value={scope}
+            onChange={(e) => onScopeChange(e.target.value)}
+            className="px-3 py-1 bg-[#f4f7fe] text-xs font-medium text-[#1b2559] rounded-full border border-slate-200 outline-none cursor-pointer"
+          >
+            {scopeOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Legends */}
+        <div className="flex gap-3 flex-wrap mb-4 min-h-[20px]">
+          {legends.map((item, index) => (
+            <div key={item} className="flex items-center gap-1.5">
+              <span
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              />
+              <span className="text-xs font-medium text-slate-600">{item}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart Area */}
+        <div
+          className={`h-48 relative transition-opacity duration-200 ${
+            isLoading ? "opacity-40 pointer-events-none" : "opacity-100"
+          }`}
+        >
+          {!isLoading && (!data?.chart || data.chart.length === 0) ? (
+            <div className="w-full h-full flex items-center justify-center text-xs text-slate-400">
+              No data available
+            </div>
+          ) : (
+            <svg
+              className="w-full h-full overflow-visible"
+              viewBox="0 0 400 150"
+              preserveAspectRatio="none"
+            >
+              {/* Đường kẻ ngang tham chiếu 0%, 50%, 100% */}
+              {[12, 75, 138].map((yPos) => (
+                <line
+                  key={yPos}
+                  x1="12"
+                  y1={yPos}
+                  x2="388"
+                  y2={yPos}
+                  stroke="#f1f5f9"
+                  strokeWidth="1"
+                  strokeDasharray="4 4"
+                />
+              ))}
+
+              {legends.map((item, index) => {
+                const color = COLORS[index % COLORS.length];
+                const points = getCoordinates(data, item);
+
+                return (
+                  <g key={item}>
+                    <path
+                      d={createPath(points)}
+                      fill="none"
+                      stroke={color}
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {points.map((pt, idx) => (
+                      <circle
+                        key={`${item}-${idx}`}
+                        cx={pt.x}
+                        cy={pt.y}
+                        r="3"
+                        fill="#ffffff"
+                        stroke={color}
+                        strokeWidth="2"
+                      >
+                        <title>{`${item} (${formatPeriod(pt.period)}): ${pt.rate}%`}</title>
+                      </circle>
+                    ))}
+                  </g>
+                );
+              })}
+            </svg>
+          )}
+        </div>
+
+        {/* X-Axis Labels */}
+        <div className="mt-3 flex justify-between text-xs text-slate-400 px-1">
+          {data?.chart?.map((item) => (
+            <span key={item.period}>{formatPeriod(item.period)}</span>
+          ))}
+        </div>
+      </article>
+    );
+  };
+
   return (
-          <section aria-label="Out Spec Line Trends" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <article
-          className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <p className="text-xs font-semibold text-[#a3aed0]">Out spec rate</p>
-              <div className="flex items-center space-x-2 mt-0.5">
-                <h4 className="text-lg sm:text-xl font-black text-[#1b2559]">100 strips</h4><span
-                  className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">-12.6%
-                  <i className="fa-solid fa-arrow-down text-[8px] ml-0.5"></i></span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="flex flex-col space-y-1 text-[11px] font-semibold text-[#707eae]">
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#6a11cb]"></span><span>SMT 1</span></div>
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#f472b6]"></span><span>SMT 2</span></div>
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#f97316]"></span><span>SMT 3</span></div>
-              </div><button
-                className="px-3 py-1 bg-[#f4f7fe] hover:bg-slate-200 text-[#2b3674] font-medium text-xs rounded-full border border-slate-200 flex items-center gap-1.5 shadow-sm transition-all"
-                type="button"><span>All</span><i
-                  className="fa-solid fa-chevron-down text-[10px] text-[#707eae]"></i></button>
-            </div>
-          </div>
-          <div className="relative pt-4">
-            <div
-              className="absolute left-0 top-4 bottom-7 w-8 flex flex-col justify-between text-[11px] font-semibold text-[#a3aed0]">
-              <span>100%</span>
-              <span>50%</span>
-              <span>10%</span>
-              <span>0</span>
-            </div>
-            <div className="ml-9 h-40 relative">
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-40">
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-              </div>
-              <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 400 150">
-                <path
-                  d="M 10,75 L 30,60 L 50,65 L 70,72 L 90,120 L 110,48 L 130,55 L 150,42 L 170,68 L 190,128 L 210,140 L 230,50 L 250,60 L 270,48 L 290,135 L 310,65 L 330,75 L 350,135 L 370,135 L 390,65"
-                  fill="none" stroke="#6a11cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
-                <path
-                  d="M 10,68 L 30,58 L 50,62 L 70,70 L 90,80 L 110,65 L 130,55 L 150,42 L 170,52 L 190,75 L 210,50 L 230,48 L 250,58 L 270,40 L 290,85 L 310,55 L 330,62 L 350,48 L 370,38 L 390,52"
-                  fill="none" stroke="#f472b6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                <path
-                  d="M 10,105 L 30,95 L 50,98 L 70,95 L 90,140 L 110,138 L 130,92 L 150,105 L 170,85 L 190,135 L 210,142 L 230,95 L 250,85 L 270,82 L 290,80 L 310,138 L 330,142 L 350,92 L 370,85 L 390,95"
-                  fill="none" stroke="#f97316" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-              </svg>
-            </div>
-            <div className="ml-9 flex justify-between text-[11px] font-semibold text-[#a3aed0] pt-2 px-1">
-              <span>Week 42</span>
-              <span>Week 43</span>
-              <span>Week 44</span>
-              <span>Week 45</span>
-            </div>
-          </div>
-        </article>
-        <article
-          className="bg-white rounded-2xl p-5 sm:p-6 shadow-[0_4px_20px_0_rgba(112,144,176,0.08)] border border-slate-100 flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-2">
-            <div>
-              <p className="text-xs font-semibold text-[#a3aed0]">Out spec rate</p>
-              <div className="flex items-center space-x-2 mt-0.5">
-                <h4 className="text-lg sm:text-xl font-black text-[#1b2559]">100 strips</h4><span
-                  className="bg-[#fee2e2] text-[#ef4444] text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">-12.6%
-                  <i className="fa-solid fa-arrow-down text-[8px] ml-0.5"></i></span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="flex flex-col space-y-1 text-[11px] font-semibold text-[#707eae]">
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#6a11cb]"></span><span>Deflux 1</span></div>
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#f472b6]"></span><span>Deflux 2</span></div>
-                <div className="flex items-center space-x-1.5"><span
-                    className="w-2 h-2 rounded-full bg-[#f97316]"></span><span>Deflux 3</span></div>
-              </div><button
-                className="px-3 py-1 bg-[#f4f7fe] hover:bg-slate-200 text-[#2b3674] font-medium text-xs rounded-full border border-slate-200 flex items-center gap-1.5 shadow-sm transition-all"
-                type="button"><span>All</span><i
-                  className="fa-solid fa-chevron-down text-[10px] text-[#707eae]"></i></button>
-            </div>
-          </div>
-          <div className="relative pt-4">
-            <div
-              className="absolute left-0 top-4 bottom-7 w-8 flex flex-col justify-between text-[11px] font-semibold text-[#a3aed0]">
-              <span>100%</span>
-              <span>50%</span>
-              <span>10%</span>
-              <span>0</span>
-            </div>
-            <div className="ml-9 h-40 relative">
-              <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-40">
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-                <div className="border-b border-dashed border-slate-200 w-full"></div>
-              </div>
-              <svg className="w-full h-full overflow-visible" preserveAspectRatio="none"
-                viewBox="0 0 400 150">
-                <path
-                  d="M 10,75 L 30,60 L 50,68 L 70,72 L 90,120 L 110,48 L 130,55 L 150,42 L 170,68 L 190,128 L 210,140 L 230,50 L 250,60 L 270,48 L 290,135 L 310,65 L 330,75 L 350,135 L 370,135 L 390,65"
-                  fill="none" stroke="#6a11cb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
-                <path
-                  d="M 10,68 L 30,58 L 50,62 L 70,70 L 90,80 L 110,65 L 130,55 L 150,42 L 170,52 L 190,75 L 210,50 L 230,48 L 250,58 L 270,40 L 290,85 L 310,55 L 330,62 L 350,48 L 370,38 L 390,52"
-                  fill="none" stroke="#f472b6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-                <path
-                  d="M 10,105 L 30,95 L 50,98 L 70,95 L 90,140 L 110,138 L 130,92 L 150,105 L 170,85 L 190,135 L 210,142 L 230,95 L 250,85 L 270,82 L 290,80 L 310,138 L 330,142 L 350,92 L 370,85 L 390,95"
-                  fill="none" stroke="#f97316" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-              </svg>
-            </div>
-            <div className="ml-9 flex justify-between text-[11px] font-semibold text-[#a3aed0] pt-2 px-1">
-              <span>Week 42</span>
-              <span>Week 43</span>
-              <span>Week 44</span>
-              <span>Week 45</span>
-            </div>
-          </div>
-        </article>
-      </section>
+    <section
+      aria-label="Out Spec Line Trends"
+      className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+      {renderChartCard(
+        "Reflow Out Spec Rate",
+        reflowData,
+        reflowLoading,
+        reflowScope,
+        setReflowScope,
+        ["All", "SMT1", "SMT2", "SMT3"]
+      )}
+
+      {renderChartCard(
+        "Deflux Out Spec Rate",
+        defluxData,
+        defluxLoading,
+        defluxScope,
+        setDefluxScope,
+        ["All", "Deflux1", "Deflux2", "Deflux3"]
+      )}
+    </section>
   );
 }
