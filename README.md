@@ -70,3 +70,8 @@ upload rate sucess:
 
 
 npm install tailwindcss @tailwindcss/vite
+
+
+tối ưu
+
+

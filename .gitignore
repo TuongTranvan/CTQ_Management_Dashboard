@@ -19,3 +19,30 @@ logs/
 backend/data/*.duckdb
 backend/data/*.db
 backend/data/*.wal
+
+# Node portable
+node-v22.18.0-win-x64/
+ 
+# Node modules
+node_modules/
+ 
+# Frontend build
+dist/
+build/
+ 
+# Logs
+*.log
+ 
+# Python
+__pycache__/
+*.pyc
+.venv/
+ 
+# Local data
+backend/data/*.parquet
+backend/data/*.pkl
+ 
+# IDE
+.vscode/
+.idea/
+.txt

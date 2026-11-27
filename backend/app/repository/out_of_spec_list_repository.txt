@@ -1,0 +1,122 @@
+# app/repository/out_of_spec_list_repository.py
+
+from app.database.connection import conn
+
+
+class OutOfSpecListRepository:
+    @staticmethod
+    def get_table(process: str) -> str:
+        return (
+            "reflow_ctq_analysis"
+            if process.lower() == "reflow"
+            else "deflux_ctq_analysis"
+        )
+
+    @staticmethod
+    def get_raw_data(table_name: str, where_clause: str):
+        """
+        Lấy toàn bộ dữ liệu thô phục vụ:
+        - Out Spec
+        - Out COV
+        """
+        query = f"""
+        SELECT *
+        FROM {table_name}
+        {where_clause}
+        """
+
+        return conn.execute(query).df()
+
+    @staticmethod
+    def get_columns(table_name: str):
+        """
+        Lấy toàn bộ cột trong view
+        """
+        rel = conn.execute(
+            f"""
+            SELECT *
+            FROM {table_name}
+            LIMIT 1
+            """
+        )
+
+        return [col[0] for col in rel.description]
+
+    @staticmethod
+    def get_parameter_definitions(table_name: str):
+        """
+        Sinh metadata parameter động.
+
+        Ví dụ:
+
+        B_Zone1_Sensor_Up
+        B_Zone1_Sensor_Up_result
+        B_Zone1_Sensor_Up_upperlimit
+        B_Zone1_Sensor_Up_lowerlimit
+        """
+        columns = OutOfSpecListRepository.get_columns(table_name)
+        parameters = []
+
+        for col in columns:
+            if not col.lower().endswith("_result"):
+                continue
+
+            if col.lower() == "result":
+                continue
+
+            parameter = col[:-7]
+
+            parameters.append(
+                {
+                    "parameter": parameter,
+                    "value_col": parameter,
+                    "result_col": col,
+                    "upper_col": f"{parameter}_upperlimit",
+                    "lower_col": f"{parameter}_lowerlimit",
+                }
+            )
+
+        return parameters
+
+    @staticmethod
+    def get_distinct_lines(table_name: str, where_clause: str):
+        query = f"""
+        SELECT DISTINCT line
+        FROM {table_name}
+        {where_clause}
+        ORDER BY line
+        """
+
+        rows = conn.execute(query).fetchall()
+
+        return [row[0] for row in rows if row[0]]
+
+    @staticmethod
+    def get_distinct_machines(table_name: str, where_clause: str):
+        query = f"""
+        SELECT DISTINCT
+            line,
+            machine_name
+        FROM {table_name}
+        {where_clause}
+        ORDER BY
+            line,
+            machine_name
+        """
+
+        return conn.execute(query).fetchall()
+
+    @staticmethod
+    def get_machine_line_mapping(table_name: str, where_clause: str):
+        """
+        Phục vụ top3 machine
+        """
+        query = f"""
+        SELECT DISTINCT
+            line,
+            machine_name
+        FROM {table_name}
+        {where_clause}
+        """
+
+        return conn.execute(query).fetchall()
